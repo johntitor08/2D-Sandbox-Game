@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Unity\\2D Sandbox Game\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A482FBED-2EAC-A166-6C86-A153BC0DE30C}|Assembly-CSharp.csproj|c:\\unity\\2d sandbox game\\assets\\scripts\\core\\inventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A482FBED-2EAC-A166-6C86-A153BC0DE30C}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\inventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A482FBED-2EAC-A166-6C86-A153BC0DE30C}|Assembly-CSharp.csproj|c:\\unity\\2d sandbox game\\assets\\scripts\\core\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A482FBED-2EAC-A166-6C86-A153BC0DE30C}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\core\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A482FBED-2EAC-A166-6C86-A153BC0DE30C}|Assembly-CSharp.csproj|C:\\Unity\\2D Sandbox Game\\Assets\\Scripts\\Core\\Inventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A482FBED-2EAC-A166-6C86-A153BC0DE30C}|Assembly-CSharp.csproj|solutionrelative:Assets\\Scripts\\Core\\Inventory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,6 +27,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "PlayerController.cs",
+              "DocumentMoniker": "C:\\Unity\\2D Sandbox Game\\Assets\\Scripts\\Core\\PlayerController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\PlayerController.cs",
+              "ToolTip": "C:\\Unity\\2D Sandbox Game\\Assets\\Scripts\\Core\\PlayerController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Core\\PlayerController.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAWwC4AAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-10T00:48:24.114Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "Inventory.cs",
               "DocumentMoniker": "C:\\Unity\\2D Sandbox Game\\Assets\\Scripts\\Core\\Inventory.cs",
               "RelativeDocumentMoniker": "Assets\\Scripts\\Core\\Inventory.cs",
@@ -30,8 +47,7 @@
               "RelativeToolTip": "Assets\\Scripts\\Core\\Inventory.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-10T06:04:36.766Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-10T06:08:18.727Z"
             }
           ]
         }
