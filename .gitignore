@@ -1,1 +1,8 @@
-*/Library
+*Library
+*Temp
+*Obj
+*Build
+*Logs
+*.user
+*.suo
+*.cache
