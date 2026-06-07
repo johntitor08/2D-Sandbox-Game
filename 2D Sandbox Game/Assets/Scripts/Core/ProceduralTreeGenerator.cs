@@ -36,11 +36,18 @@ public class ProceduralTreeGenerator : MonoBehaviour
     }
     
     public TreeSettings treeSettings;
-    
+
+    // Hard cap on total generated branches; branch count grows as
+    // branchesPerLevel^branchLevels, which can hang the editor/runtime.
+    private const int MaxBranches = 2000;
+    private int generatedBranches;
+
     public GameObject GenerateTree()
     {
         GameObject tree = new GameObject("ProceduralTree");
-        
+
+        generatedBranches = 0;
+
         // Generate trunk
         GameObject trunk = GenerateTrunk();
         trunk.transform.parent = tree.transform;
@@ -86,6 +93,13 @@ public class ProceduralTreeGenerator : MonoBehaviour
         
         for (int i = 0; i < branchCount; i++)
         {
+            if (generatedBranches >= MaxBranches)
+            {
+                Debug.LogWarning($"ProceduralTreeGenerator: branch cap ({MaxBranches}) reached; truncating tree.");
+                return;
+            }
+            generatedBranches++;
+
             float angle = angleStep * i + Random.Range(-treeSettings.randomness * 30f, treeSettings.randomness * 30f);
             float branchAngle = treeSettings.branchAngle + Random.Range(-treeSettings.randomness * 20f, treeSettings.randomness * 20f);
             

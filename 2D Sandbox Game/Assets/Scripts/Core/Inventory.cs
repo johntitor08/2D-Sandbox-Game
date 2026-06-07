@@ -31,12 +31,12 @@ public class Inventory : MonoBehaviour
     
     void Update()
     {
-        // Hotbar selection with number keys
-        if (Input.GetKeyDown(KeyCode.Alpha1)) selectedSlot = 0;
-        if (Input.GetKeyDown(KeyCode.Alpha2)) selectedSlot = 1;
-        if (Input.GetKeyDown(KeyCode.Alpha3)) selectedSlot = 2;
-        if (Input.GetKeyDown(KeyCode.Alpha4)) selectedSlot = 3;
-        if (Input.GetKeyDown(KeyCode.Alpha5)) selectedSlot = 4;
+        // Hotbar selection with number keys (Alpha1..Alpha9 are sequential)
+        for (int i = 0; i < Mathf.Min(slots.Count, 9); i++)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+                selectedSlot = i;
+        }
         
         // Mouse wheel
         float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -107,10 +107,10 @@ public class Inventory : MonoBehaviour
         // Simple inventory display
         float slotSize = 50;
         float spacing = 10;
-        float startX = Screen.width / 2 - (maxSlots * (slotSize + spacing)) / 2;
+        float startX = Screen.width / 2 - (slots.Count * (slotSize + spacing)) / 2;
         float startY = Screen.height - slotSize - 20;
-        
-        for (int i = 0; i < Mathf.Min(5, slots.Count); i++)
+
+        for (int i = 0; i < slots.Count; i++)
         {
             float x = startX + i * (slotSize + spacing);
             
