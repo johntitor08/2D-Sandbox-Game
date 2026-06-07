@@ -24,17 +24,29 @@ public class TerrainGeneration : MonoBehaviour
         TerrainData terrainData = terrain.terrainData;
         terrainData.heightmapResolution = worlSize + 1;
         terrainData.size = new Vector3(worlSize, 50, worlSize);
-        float[,] heights = new float[worlSize, worlSize];
 
-        for (int x = 0; x < worlSize; x++)
+        // Unity may snap heightmapResolution to a valid value, so read it back
+        // and size the array to match what SetHeights expects.
+        int resolution = terrainData.heightmapResolution;
+        float[,] heights = new float[resolution, resolution];
+
+        bool hasFalloff = falloffMap != null;
+        if (!hasFalloff)
+            Debug.LogWarning("TerrainGeneration: falloffMap not assigned; generating terrain without falloff.");
+
+        for (int x = 0; x < resolution; x++)
         {
-            for (int y = 0; y < worlSize; y++)
+            for (int y = 0; y < resolution; y++)
             {
                 float noiseValue = GeneratePerlinNoise(x, y);
-                float falloffValue = falloffMap.GetPixel(x * falloffMap.width / worlSize, y * falloffMap.height / worlSize).r;
-                heights[x, y] = Mathf.Clamp01(noiseValue - falloffValue);
+                float falloffValue = 0f;
+                if (hasFalloff)
+                    falloffValue = falloffMap.GetPixel(x * falloffMap.width / resolution, y * falloffMap.height / resolution).r;
 
-                if (noiseTexture != null)
+                // TerrainData.SetHeights is indexed as [row (z), column (x)].
+                heights[y, x] = Mathf.Clamp01(noiseValue - falloffValue);
+
+                if (noiseTexture != null && x < noiseTexture.width && y < noiseTexture.height)
                 {
                     noiseTexture.SetPixel(x, y, new Color(noiseValue, noiseValue, noiseValue));
                 }
@@ -42,6 +54,9 @@ public class TerrainGeneration : MonoBehaviour
             }
 
         }
+
+        if (noiseTexture != null)
+            noiseTexture.Apply();
 
         terrainData.SetHeights(0, 0, heights);
 

@@ -27,12 +27,15 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         worldGen = Object.FindFirstObjectByType<WorldGenerator>();
         inventory = GetComponent<Inventory>();
-        
+
         if (mainCamera == null)
             mainCamera = Camera.main;
-            
+
         // Set spawn position
-        transform.position = new Vector3(worldGen.worldWidth / 2f, worldGen.surfaceHeight + 10, 0);
+        if (worldGen != null)
+            transform.position = new Vector3(worldGen.worldWidth / 2f, worldGen.surfaceHeight + 10, 0);
+        else
+            Debug.LogError("PlayerController: No WorldGenerator found in scene; cannot place player or mine/place blocks.");
     }
     
     void Update()
@@ -64,6 +67,8 @@ public class PlayerController : MonoBehaviour
     
     void HandleMining()
     {
+        if (worldGen == null || mainCamera == null) return;
+
         if (Input.GetMouseButton(0) && Time.time > lastMineTime + miningCooldown)
         {
             Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -71,29 +76,36 @@ public class PlayerController : MonoBehaviour
                 Mathf.RoundToInt(mousePos.x),
                 Mathf.RoundToInt(mousePos.y)
             );
-            
+
             float distance = Vector2.Distance(transform.position, new Vector2(blockPos.x, blockPos.y));
-            
+
             if (distance <= miningRange)
             {
                 GameObject blockObj = GetBlockAt(blockPos);
                 if (blockObj != null)
                 {
                     Block block = blockObj.GetComponent<Block>();
-                    if (block != null && block.TakeDamage())
+                    if (block != null)
                     {
-                        if (inventory != null)
-                            inventory.AddBlock(block.blockType);
-                        worldGen.DestroyBlock(blockPos);
+                        // Throttle every hit, not just the killing blow, so the
+                        // cooldown actually limits damage to multi-hit blocks.
                         lastMineTime = Time.time;
+                        if (block.TakeDamage())
+                        {
+                            if (inventory != null)
+                                inventory.AddBlock(block.blockType);
+                            worldGen.DestroyBlock(blockPos);
+                        }
                     }
                 }
             }
         }
     }
-    
+
     void HandlePlacing()
     {
+        if (worldGen == null || mainCamera == null) return;
+
         if (Input.GetMouseButtonDown(1))
         {
             Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -132,9 +144,18 @@ public class PlayerController : MonoBehaviour
     
     void OnCollisionStay2D(Collision2D collision)
     {
-        isGrounded = true;
+        // Only count contacts coming from below as "ground" so that brushing a
+        // wall does not enable mid-air jumps.
+        foreach (var contact in collision.contacts)
+        {
+            if (contact.normal.y > 0.5f)
+            {
+                isGrounded = true;
+                return;
+            }
+        }
     }
-    
+
     void OnCollisionExit2D(Collision2D collision)
     {
         isGrounded = false;

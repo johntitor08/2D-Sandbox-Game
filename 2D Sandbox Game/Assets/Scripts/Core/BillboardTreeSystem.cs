@@ -30,7 +30,7 @@ public class BillboardTreeSystem : MonoBehaviour
     public bool useFrustumCulling = true;
     
     private List<Matrix4x4[]> instanceMatrices = new List<Matrix4x4[]>();
-    private List<MaterialPropertyBlock[]> propertyBlocks = new List<MaterialPropertyBlock[]>();
+    private List<MaterialPropertyBlock> propertyBlocks = new List<MaterialPropertyBlock>();
     private Mesh billboardMesh;
     private Camera mainCamera;
     
@@ -83,26 +83,33 @@ public class BillboardTreeSystem : MonoBehaviour
         foreach (var billboardTree in billboardTrees)
         {
             List<Matrix4x4> matrices = new List<Matrix4x4>();
-            
+
+            // Bound rejection-sampling retries so unsatisfiable placement rules
+            // (e.g. maxSlope too low) can't spin the loop forever.
+            int rejections = 0;
+            int maxRejections = billboardTree.instanceCount * 30 + 100;
+
             for (int i = 0; i < billboardTree.instanceCount; i++)
             {
                 // Random position on terrain
                 float x = Random.Range(0f, terrainData.size.x);
                 float z = Random.Range(0f, terrainData.size.z);
-                
+
                 Vector3 worldPos = new Vector3(x, 0, z) + terrain.transform.position;
                 float y = terrain.SampleHeight(worldPos);
                 worldPos.y = y;
-                
+
                 // Check placement rules
                 float xNorm = x / terrainData.size.x;
                 float zNorm = z / terrainData.size.z;
                 float height = y / terrainData.size.y;
                 float steepness = terrainData.GetSteepness(xNorm, zNorm);
-                
+
                 if (height < minHeight || height > maxHeight || steepness > maxSlope)
                 {
-                    i--;
+                    rejections++;
+                    if (rejections < maxRejections)
+                        i--;
                     continue;
                 }
                 
@@ -120,18 +127,16 @@ public class BillboardTreeSystem : MonoBehaviour
                 Matrix4x4[] batch = new Matrix4x4[count];
                 matrices.CopyTo(i, batch, 0, count);
                 instanceMatrices.Add(batch);
-                
-                // Create property block for texture
-                MaterialPropertyBlock[] blocks = new MaterialPropertyBlock[count];
-                for (int j = 0; j < count; j++)
+
+                // One property block per batch carries this tree type's texture.
+                // DrawMeshInstanced takes a single MaterialPropertyBlock per call,
+                // so a per-instance array could never be applied.
+                MaterialPropertyBlock block = new MaterialPropertyBlock();
+                if (billboardTree.billboardTexture != null)
                 {
-                    blocks[j] = new MaterialPropertyBlock();
-                    if (billboardTree.billboardTexture != null)
-                    {
-                        blocks[j].SetTexture("_MainTex", billboardTree.billboardTexture);
-                    }
+                    block.SetTexture("_MainTex", billboardTree.billboardTexture);
                 }
-                propertyBlocks.Add(blocks);
+                propertyBlocks.Add(block);
             }
         }
         
@@ -157,7 +162,7 @@ public class BillboardTreeSystem : MonoBehaviour
                 billboardMaterial,
                 instanceMatrices[i],
                 instanceMatrices[i].Length,
-                null,
+                propertyBlocks[i],
                 UnityEngine.Rendering.ShadowCastingMode.Off,
                 false,
                 0,
